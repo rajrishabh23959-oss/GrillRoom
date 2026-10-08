@@ -2,10 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
-import { FEATURE_INTRO_GATE } from "@/lib/features/flags";
 import "./intro-gate.css";
-
-const STORAGE_KEY = "grillroom_intro_seen";
 
 interface IntroGateProps {
   onEnter?: () => void;
@@ -24,17 +21,11 @@ interface IntroGateProps {
  * - Safe fallback if any client errors occur
  */
 export const IntroGate: React.FC<IntroGateProps> = ({ onEnter }) => {
-  // If feature flag is disabled at build/runtime, do not render anything
-  if (!FEATURE_INTRO_GATE) {
-    return null;
-  }
-
   return <IntroGateClient onEnter={onEnter} />;
 };
 
 function IntroGateClient({ onEnter }: { onEnter?: () => void }) {
-  const [mounted, setMounted] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [isOpening, setIsOpening] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -42,20 +33,6 @@ function IntroGateClient({ onEnter }: { onEnter?: () => void }) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const leftDoorRef = useRef<HTMLDivElement>(null);
   const safetyTimerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Check sessionStorage on client mount
-  useEffect(() => {
-    try {
-      setMounted(true);
-      const seen = typeof window !== "undefined" && window.sessionStorage.getItem(STORAGE_KEY);
-      if (!seen) {
-        setIsVisible(true);
-      }
-    } catch {
-      // Storage blocked / incognito edge cases -> show intro once
-      setIsVisible(true);
-    }
-  }, []);
 
   // Lock body scroll and set focus when intro is active
   useEffect(() => {
@@ -76,14 +53,6 @@ function IntroGateClient({ onEnter }: { onEnter?: () => void }) {
   }, [isVisible]);
 
   const handleFinishEntry = useCallback(() => {
-    try {
-      if (typeof window !== "undefined") {
-        window.sessionStorage.setItem(STORAGE_KEY, "true");
-      }
-    } catch {
-      // Ignore storage errors
-    }
-
     setIsVisible(false);
     onEnter?.();
   }, [onEnter]);
@@ -141,12 +110,7 @@ function IntroGateClient({ onEnter }: { onEnter?: () => void }) {
     return null;
   }
 
-  // Before client mount, render plain dark cover when flag is ON to prevent any flash of main app
-  if (!mounted) {
-    return <div className="intro-screen" style={{ background: "#080A0F" }} aria-hidden="true" />;
-  }
-
-  // Already entered during this session: render nothing
+  // Already entered: render nothing
   if (!isVisible) {
     return null;
   }

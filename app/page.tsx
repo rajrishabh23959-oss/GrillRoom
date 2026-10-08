@@ -14,11 +14,9 @@ import {
   Trash2,
   Check,
 } from "lucide-react";
-import dynamic from "next/dynamic";
 import { PitchRulesSidebar } from "@/components/landing/PitchRulesSidebar";
 import { HowItWorksModal } from "@/components/landing/HowItWorksModal";
-
-const IntroGate = dynamic(() => import("@/components/features/intro-gate/IntroGate").then((mod) => mod.IntroGate), { ssr: false });
+import { IntroGate } from "@/components/features/intro-gate/IntroGate";
 
 export default function SetupPage() {
   const router = useRouter();

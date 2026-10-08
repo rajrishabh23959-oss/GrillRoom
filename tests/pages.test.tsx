@@ -26,7 +26,7 @@ describe("Page Components Integration Suite", () => {
       render(<HomePage />);
       expect(screen.getByText("AI INVESTOR PANEL · PITCH PRACTICE")).toBeInTheDocument();
       expect(screen.getByPlaceholderText(/Paste your investor pitch/i)).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /Enter the GrillRoom/i })).toBeInTheDocument();
+      expect(screen.getAllByRole("button", { name: /Enter the GrillRoom/i }).length).toBeGreaterThanOrEqual(1);
     });
   });
 

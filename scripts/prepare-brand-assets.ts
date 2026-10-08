@@ -27,13 +27,28 @@ async function prepareBrandAssets() {
   console.log("✅ logo-header.png and logo-header.webp generated");
 
   // 2. Crop the mark (the emblem on the left: fireplace/flame)
-  // Perfectly centered 220x220 crop of the fireplace and flame emblem
   const markSource = fs.existsSync(path.join(brandDir, "grillroom-logo-raw.png"))
     ? path.join(brandDir, "grillroom-logo-raw.png")
     : inputLogo;
 
-  await sharp(markSource)
-    .extract({ left: 172, top: 141, width: 220, height: 220 })
+  const croppedBuffer = await sharp(markSource)
+    .extract({ left: 182, top: 152, width: 198, height: 198 })
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  const rawData = Buffer.from(croppedBuffer.data);
+  for (let i = 0; i < rawData.length; i += 4) {
+    const r = rawData[i], g = rawData[i + 1], b = rawData[i + 2];
+    const diff = Math.abs(r - 247) + Math.abs(g - 241) + Math.abs(b - 229);
+    if (diff < 35) {
+      rawData[i + 3] = 0;
+    } else if (diff < 65) {
+      rawData[i + 3] = Math.round(((diff - 35) / 30) * 255);
+    }
+  }
+
+  await sharp(rawData, { raw: croppedBuffer.info })
     .resize(512, 512)
     .png({ quality: 95 })
     .toFile(path.join(brandDir, "logo-mark.png"));

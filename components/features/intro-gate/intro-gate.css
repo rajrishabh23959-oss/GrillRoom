@@ -187,14 +187,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.25rem;
+  width: 68px;
+  height: 68px;
+  border-radius: 18px;
+  background: rgba(20, 40, 79, 0.75);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 0 16px rgba(249, 115, 22, 0.25);
+  margin-bottom: 0.5rem;
 }
 
 .intro-logo-img {
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 16px rgba(249, 115, 22, 0.4));
+  filter: drop-shadow(0 2px 8px rgba(249, 115, 22, 0.5));
 }
 
 /* Tagline / Eyebrow */
